@@ -1,5 +1,3 @@
-require "util"  -- I don't know what it does
-
 DEBUG = false
 
 
@@ -62,28 +60,7 @@ function create_camera_element(player)
 
   set_target_for(player, player)
 
-  --local title_label = camera_element.add{type = "label", name = "title_label", caption = player.name}
-  --title_label.style.top_padding = 0
-	--title_label.style.left_padding = 8
-
   return camera_element
-end
-
-function remove_player_buttons()
-  local player_button_names = {}
-  for index,player in pairs(game.players) do
-    player_button_names[index] = get_button_name(player)
-  end
-
-  for _,player in pairs(game.players) do
-    local base_element = player.gui.left.camera_frame
-
-    for _,child_element in pairs(base_element.children) do
-      if has_value(player_button_names, child_element.name) then
-        child_element.destroy() -- Needs 'reverse' ?
-      end
-    end
-  end
 end
 
 function add_player_button(player)
