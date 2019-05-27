@@ -1,18 +1,16 @@
 DEBUG = false
+TARGET_BUTTONS_PREFIX = "button_camera_target_"
 
 
 -- Events --
 
 
 script.on_event(defines.events.on_gui_click, function(event)
-  for _,target in pairs(game.players) do
-    local button_name = get_button_name(target)
-    if event.element.name == button_name then
-      local button = event.element
-      local player = game.players[button.player_index]
-      set_target_for(player, target)
-      break
-    end
+  local clicker = game.players[event.player_index]
+  local element_name = event.element.name
+  if element_name:sub(1, #TARGET_BUTTONS_PREFIX) == TARGET_BUTTONS_PREFIX then
+    local target_name = element_name:sub(#TARGET_BUTTONS_PREFIX + 1)
+    set_target_for(clicker, game.get_player(target_name))
   end
 end)
 
@@ -27,7 +25,7 @@ end)
 
 
 function get_button_name(player)
-  return "button_" .. player.name
+  return TARGET_BUTTONS_PREFIX .. player.name
 end
 
 function get_target_for(player)
