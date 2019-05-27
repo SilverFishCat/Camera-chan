@@ -40,7 +40,12 @@ function get_target_for(player)
 end
 
 function set_target_for(player, target)
-  print_to(player, "Change target from " .. get_target_for(player).name .. " to " .. target.name)
+    local previous_target = get_target_for(player)
+    if previous_target ~= target then
+      print_to(player, "Change target from " .. previous_target.name .. " to " .. target.name)
+    else
+      print_to(player, "Camera staying on " .. target.name)
+    end
   global[player.name] = target.index
 end
 
@@ -49,8 +54,8 @@ function create_camera_element(player)
 
   local base_element = root_element.add {type = "frame", name="camera_frame", direction = "vertical"}
   base_element.style.top_padding = 8
-	base_element.style.left_padding = 8
-	base_element.style.right_padding = 8
+  base_element.style.left_padding = 8
+  base_element.style.right_padding = 8
   base_element.style.bottom_padding = 8
   base_element.style.maximal_width = 296
 
