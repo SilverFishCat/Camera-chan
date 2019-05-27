@@ -12,6 +12,7 @@ script.on_init(function(event)
   global.target = {}
 end)
 
+-- Init a player's ui
 script.on_event(defines.events.on_player_created, function(event)
   local player = game.players[event.player_index]
 
@@ -22,6 +23,7 @@ script.on_event(defines.events.on_player_created, function(event)
   })
 end)
 
+-- Update all guis when a player joins
 script.on_event(defines.events.on_player_joined_game, function(event)
   local player = game.players[event.player_index]
 
@@ -36,6 +38,7 @@ script.on_event(defines.events.on_player_joined_game, function(event)
   end
 end)
 
+-- Update all guis when a player leaves
 script.on_event(defines.events.on_player_left_game, function(event)
   local player = game.players[event.player_index]
 
@@ -50,17 +53,21 @@ script.on_event(defines.events.on_player_left_game, function(event)
   end
 end)
 
+-- Handle button clicks
 script.on_event(defines.events.on_gui_click, function(event)
   local clicker = game.players[event.player_index]
   local element_name = event.element.name
+  -- Clicked element is a player target button
   if element_name:sub(1, #TARGET_BUTTONS_PREFIX) == TARGET_BUTTONS_PREFIX then
     local target_name = element_name:sub(#TARGET_BUTTONS_PREFIX + 1)
     set_target_for(clicker, game.get_player(target_name))
+  -- Clicked on camera toggle button
   elseif element_name == CAMERA_TOGGLE_BUTTON then
     set_show_state(clicker, not get_show_state(clicker))
   end
 end)
 
+-- Update camera loop
 script.on_event(defines.events.on_tick, function(event)
   update_camera_element()
 end)
@@ -97,9 +104,11 @@ function set_target_for(player, target)
   global.target[player.index] = target.index
 end
 
+-- Create the camera frame
 function create_camera_frame(player)
   local root_element = player.gui.left
 
+  -- Frame holding all mod ui elements
   local base_element = root_element.add {type = "frame", name="camera_frame", direction = "vertical"}
   base_element.style.top_padding = 8
   base_element.style.left_padding = 8
@@ -111,7 +120,8 @@ function create_camera_frame(player)
   camera_element.style.minimal_width = 280
   camera_element.style.minimal_height = 280
 
-  set_target_for(player, player)
+  -- Set a default camera target
+  set_target_for(player, player) 
 
   -- Add buttons for all connected players
   for _,other_player in pairs(game.players) do
@@ -123,6 +133,7 @@ function create_camera_frame(player)
   return camera_element
 end
 
+-- Remove the camera from for a given player
 function destroy_camera_frame(player)
   player.gui.left.camera_frame.destroy()
 end
