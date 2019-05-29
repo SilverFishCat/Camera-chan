@@ -8,7 +8,7 @@ TARGET_BUTTONS_PREFIX = "button_camera_target_"
 -- Events --
 
 script.on_init(function(event)
-  global["toggle"] = {}
+  global.show = {}
 end)
 
 script.on_event(defines.events.on_player_created, function(event)
@@ -19,7 +19,7 @@ script.on_event(defines.events.on_player_created, function(event)
     name = CAMERA_TOGGLE_BUTTON,
     caption = "Camera"
   })
-  global["toggle"][event.player_index] = true
+  set_show_state(player, true)
 end)
 
 script.on_event(defines.events.on_gui_click, function(event)
@@ -29,7 +29,7 @@ script.on_event(defines.events.on_gui_click, function(event)
     local target_name = element_name:sub(#TARGET_BUTTONS_PREFIX + 1)
     set_target_for(clicker, game.get_player(target_name))
   elseif element_name == CAMERA_TOGGLE_BUTTON then
-    global["toggle"][event.player_index] = not global["toggle"][event.player_index]
+    set_show_state(clicker, not get_show_state(clicker))
   end
 end)
 
@@ -42,6 +42,20 @@ end)
 
 -- Functions --
 
+
+function get_show_state(player)
+  return global.show[player.index]
+end
+
+function set_show_state(player, state)
+  global.show[player.index] = state
+
+  if get_show_state(player) then
+    create_camera_frame(player)
+  else
+    destroy_camera_frame(player)
+  end
+end
 
 function get_button_name(player)
   return TARGET_BUTTONS_PREFIX .. player.name
@@ -66,7 +80,7 @@ function set_target_for(player, target)
   global[player.name] = target.index
 end
 
-function create_camera_element(player)
+function create_camera_frame(player)
   local root_element = player.gui.left
 
   local base_element = root_element.add {type = "frame", name="camera_frame", direction = "vertical"}
@@ -83,6 +97,10 @@ function create_camera_element(player)
   set_target_for(player, player)
 
   return camera_element
+end
+
+function destroy_camera_frame(player)
+  player.gui.left.camera_frame.destroy()
 end
 
 function update_player_buttons(player)
@@ -122,11 +140,7 @@ end
 function update_camera_element()
   for _,player in pairs(game.players) do
     if player.connected then
-      if global["toggle"][player.index] then
-        if player.gui.left.camera_frame == nil then
-          create_camera_element(player)
-        end
-
+      if global.show[player.index] then
         update_player_buttons(player)
 
         local camera_element = player.gui.left.camera_frame.camera
@@ -134,8 +148,6 @@ function update_camera_element()
 
         camera_element.position = target.position
         camera_element.surface_index = target.surface.index
-      elseif player.gui.left.camera_frame ~= nil then
-        player.gui.left.camera_frame.destroy()
       end
     end
   end
