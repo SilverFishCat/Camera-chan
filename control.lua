@@ -149,3 +149,5 @@ function print_to(player, message)
     player.print(serpent.block(message))
   end
 end
+
+-- vim: et:sw=2:ts=2
