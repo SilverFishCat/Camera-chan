@@ -19,7 +19,34 @@ script.on_event(defines.events.on_player_created, function(event)
     name = CAMERA_TOGGLE_BUTTON,
     caption = "Camera"
   })
+end)
+
+script.on_event(defines.events.on_player_joined_game, function(event)
+  local player = game.players[event.player_index]
+
+  -- Show camera by default
   set_show_state(player, true)
+
+  -- Add button for the player for all current players
+  for _,other_player in pairs(game.players) do
+    if other_player.connected and other_player ~= player then
+      add_target_button(other_player, player)
+    end
+  end
+end)
+
+script.on_event(defines.events.on_player_left_game, function(event)
+  local player = game.players[event.player_index]
+
+  -- Remove the camera frame so it gets refreshed if the player comes back online
+  set_show_state(player, false)
+
+  -- Remove the target button from all players
+  for _,other_player in pairs(game.players) do
+    if other_player.connected and other_player ~= player then
+      remove_target_button(other_player, player)
+    end
+  end
 end)
 
 script.on_event(defines.events.on_gui_click, function(event)
@@ -48,12 +75,14 @@ function get_show_state(player)
 end
 
 function set_show_state(player, state)
-  global.show[player.index] = state
+  if get_show_state(player) ~= state then
+    global.show[player.index] = state
 
-  if get_show_state(player) then
-    create_camera_frame(player)
-  else
-    destroy_camera_frame(player)
+    if get_show_state(player) then
+      create_camera_frame(player)
+    else
+      destroy_camera_frame(player)
+    end
   end
 end
 
@@ -71,12 +100,13 @@ function get_target_for(player)
 end
 
 function set_target_for(player, target)
-    local previous_target = get_target_for(player)
-    if previous_target ~= target then
-      print_to(player, "Change target from " .. previous_target.name .. " to " .. target.name)
-    else
-      print_to(player, "Camera staying on " .. target.name)
-    end
+  local previous_target = get_target_for(player)
+  if previous_target ~= target then
+    print_to(player, "Change target from " .. previous_target.name .. " to " .. target.name)
+  else
+    print_to(player, "Camera staying on " .. target.name)
+  end
+
   global[player.name] = target.index
 end
 
@@ -96,30 +126,18 @@ function create_camera_frame(player)
 
   set_target_for(player, player)
 
+  -- Add buttons for all connected players
+  for _,other_player in pairs(game.players) do
+    if other_player.connected then
+      add_target_button(player, other_player)
+    end
+  end
+
   return camera_element
 end
 
 function destroy_camera_frame(player)
   player.gui.left.camera_frame.destroy()
-end
-
-function update_player_buttons(player)
-  local base_element = player.gui.left.camera_frame
-
-  for _,target in pairs(game.players) do
-    local button_name = get_button_name(target)
-
-    local has_character = target.connected
-    local has_target_button = base_element[button_name] ~= nil
-
-    if has_character and (has_target_button == false) then
-      add_target_button(player, target)
-    elseif (has_character == false) and has_target_button then
-      remove_target_button(player, target)
-    else
-      -- do nothing
-    end
-  end
 end
 
 -- Add button
@@ -136,19 +154,13 @@ function remove_target_button(player, target)
   base_element[get_button_name(target)].destroy()
 end
 
-
+-- Update the camera position
 function update_camera_element()
   for _,player in pairs(game.players) do
-    if player.connected then
-      if global.show[player.index] then
-        update_player_buttons(player)
-
-        local camera_element = player.gui.left.camera_frame.camera
-        local target = get_target_for(player)
-
-        camera_element.position = target.position
-        camera_element.surface_index = target.surface.index
-      end
+    if player.connected and global.show[player.index] then
+      local camera_element = player.gui.left.camera_frame.camera
+      local target = get_target_for(player)
+      camera_element.position = target.position
     end
   end
 end
