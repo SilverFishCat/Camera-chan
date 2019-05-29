@@ -1,9 +1,29 @@
+require "mod-gui"
+
 DEBUG = false
+CAMERA_TOGGLE_BUTTON = "camera_toggle"
 TARGET_BUTTONS_PREFIX = "button_camera_target_"
 
 
 -- Events --
 
+script.on_load(function(event)
+  global["toggle"] = {}
+end)
+
+script.on_event(defines.events.on_player_created, function(event)
+  local player = game.players[event.player_index]
+
+  mod_gui.get_button_flow(player).add({
+    type = "button",
+    name = CAMERA_TOGGLE_BUTTON,
+    caption = "Camera"
+  })
+  if not global["toggle"] then
+    global["toggle"] = {}
+  end
+  global["toggle"][event.player_index] = true
+end)
 
 script.on_event(defines.events.on_gui_click, function(event)
   local clicker = game.players[event.player_index]
@@ -11,6 +31,8 @@ script.on_event(defines.events.on_gui_click, function(event)
   if element_name:sub(1, #TARGET_BUTTONS_PREFIX) == TARGET_BUTTONS_PREFIX then
     local target_name = element_name:sub(#TARGET_BUTTONS_PREFIX + 1)
     set_target_for(clicker, game.get_player(target_name))
+  elseif element_name == CAMERA_TOGGLE_BUTTON then
+    global["toggle"][event.player_index] = not global["toggle"][event.player_index]
   end
 end)
 
@@ -93,17 +115,21 @@ end
 function update_camera_element()
   for _,player in pairs(game.players) do
     if player.connected then
-      if player.gui.left.camera_frame == nil then
-        create_camera_element(player)
+      if global["toggle"][player.index] then
+        if player.gui.left.camera_frame == nil then
+          create_camera_element(player)
+        end
+
+        add_player_button(player)
+
+        local camera_element = player.gui.left.camera_frame.camera
+        local target = get_target_for(player)
+
+        camera_element.position = target.position
+        camera_element.surface_index = target.surface.index
+      elseif player.gui.left.camera_frame ~= nil then
+        player.gui.left.camera_frame.destroy()
       end
-  
-      add_player_button(player)
-  
-      local camera_element = player.gui.left.camera_frame.camera
-      local target = get_target_for(player)
-  
-      camera_element.position = target.position
-      camera_element.surface_index = target.surface.index  
     end
   end
 end
