@@ -61,9 +61,7 @@ script.on_event(defines.events.on_gui_click, function(event)
 end)
 
 script.on_event(defines.events.on_tick, function(event)
-  if game.tick % 1 == 0 then
-    update_camera_element()
-  end
+  update_camera_element()
 end)
 
 
