@@ -9,6 +9,7 @@ TARGET_BUTTONS_PREFIX = "button_camera_target_"
 
 script.on_init(function(event)
   global.show = {}
+  global.target = {}
 end)
 
 script.on_event(defines.events.on_player_created, function(event)
@@ -89,23 +90,11 @@ function get_button_name(player)
 end
 
 function get_target_for(player)
-  local index = global[player.name]
-  if index == nil then
-    return player
-  end
-
-  return game.players[index]
+  return game.players[global.target[player.index]]
 end
 
 function set_target_for(player, target)
-  local previous_target = get_target_for(player)
-  if previous_target ~= target then
-    print_to(player, "Change target from " .. previous_target.name .. " to " .. target.name)
-  else
-    print_to(player, "Camera staying on " .. target.name)
-  end
-
-  global[player.name] = target.index
+  global.target[player.index] = target.index
 end
 
 function create_camera_frame(player)
@@ -159,6 +148,7 @@ function update_camera_element()
       local camera_element = player.gui.left.camera_frame.camera
       local target = get_target_for(player)
       camera_element.position = target.position
+      camera_element.surface_index = target.surface.index
     end
   end
 end
