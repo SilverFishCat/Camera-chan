@@ -169,7 +169,7 @@ end
 
 -- Remove button
 function remove_target_button(player, target)
-  local base_element = get_button_name(player)
+  local base_element = get_base_element(player)
   base_element[get_button_name(target)].destroy()
 end
 
