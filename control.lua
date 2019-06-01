@@ -109,7 +109,7 @@ function create_camera_frame(player)
   local root_element = player.gui.left
 
   -- Frame holding all mod ui elements
-  local frame = root_element.add {type = "frame", name="camera_frame", direction = "vertical"}
+  local frame = mod_gui.get_frame_flow(player).add {type = "frame", name="camera_frame", direction = "vertical"}
   local base_element = frame.add { type = "flow", name = "element_flow", direction = "vertical" }
   local PADDING = 8
   base_element.style.top_padding = PADDING
@@ -137,19 +137,27 @@ end
 
 -- Remove the camera from for a given player
 function destroy_camera_frame(player)
-  player.gui.left.camera_frame.destroy()
+  get_frame(player).destroy()
+end
+
+function get_frame(player)
+  return mod_gui.get_frame_flow(player).camera_frame
+end
+
+function get_base_element(player)
+  return get_frame(player).element_flow
 end
 
 -- Add button
 function add_target_button(player, target)
-  local base_element = player.gui.left.camera_frame.element_flow
+  local base_element = get_base_element(player)
   local button = base_element.add{type = "button", name = get_button_name(target), caption = target.name}
   button.style.maximal_width = 280
 end
 
 -- Remove button
 function remove_target_button(player, target)
-  local base_element = player.gui.left.camera_frame.element_flow
+  local base_element = get_button_name(player)
   base_element[get_button_name(target)].destroy()
 end
 
@@ -157,7 +165,7 @@ end
 function update_camera_element()
   for _,player in pairs(game.players) do
     if player.connected and global.show[player.index] then
-      local camera_element = player.gui.left.camera_frame.element_flow.camera
+      local camera_element = get_base_element(player).camera
       local target = get_target_for(player)
       camera_element.position = target.position
       camera_element.surface_index = target.surface.index
