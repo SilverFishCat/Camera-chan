@@ -12,6 +12,16 @@ script.on_init(function(event)
   global.target = {}
 end)
 
+-- Update GUI if mod or settings have been updated
+script.on_configuration_changed(function(event)
+  for index, player in pairs(game.players) do
+    if player.connected and global.show[index] then
+      destroy_camera_frame(player)
+      create_camera_frame(player)
+    end
+  end
+end)
+
 -- Init a player's ui
 script.on_event(defines.events.on_player_created, function(event)
   local player = game.players[event.player_index]
