@@ -109,16 +109,18 @@ function create_camera_frame(player)
   local root_element = player.gui.left
 
   -- Frame holding all mod ui elements
-  local base_element = root_element.add {type = "frame", name="camera_frame", direction = "vertical"}
-  base_element.style.top_padding = 8
-  base_element.style.left_padding = 8
-  base_element.style.right_padding = 8
-  base_element.style.bottom_padding = 8
-  base_element.style.maximal_width = 296
+  local frame = root_element.add {type = "frame", name="camera_frame", direction = "vertical"}
+  local base_element = frame.add { type = "flow", name = "element_flow", direction = "vertical" }
+  local PADDING = 8
+  base_element.style.top_padding = PADDING
+  base_element.style.left_padding = PADDING
+  base_element.style.right_padding = PADDING
+  base_element.style.bottom_padding = PADDING
+  base_element.style.maximal_width = 280 + PADDING*2
 
   local camera_element = base_element.add {type = "camera", name="camera", position = player.position, surface_index = player.surface.index, zoom = 0.25}
-  camera_element.style.minimal_width = 280
-  camera_element.style.minimal_height = 280
+  camera_element.style.width = 280
+  camera_element.style.height = 280
 
   -- Set a default camera target
   set_target_for(player, player) 
@@ -140,15 +142,14 @@ end
 
 -- Add button
 function add_target_button(player, target)
-  local base_element = player.gui.left.camera_frame
+  local base_element = player.gui.left.camera_frame.element_flow
   local button = base_element.add{type = "button", name = get_button_name(target), caption = target.name}
-  button.style.top_padding = 0
-  button.style.left_padding = 8
+  button.style.maximal_width = 280
 end
 
 -- Remove button
 function remove_target_button(player, target)
-  local base_element = player.gui.left.camera_frame
+  local base_element = player.gui.left.camera_frame.element_flow
   base_element[get_button_name(target)].destroy()
 end
 
@@ -156,7 +157,7 @@ end
 function update_camera_element()
   for _,player in pairs(game.players) do
     if player.connected and global.show[player.index] then
-      local camera_element = player.gui.left.camera_frame.camera
+      local camera_element = player.gui.left.camera_frame.element_flow.camera
       local target = get_target_for(player)
       camera_element.position = target.position
       camera_element.surface_index = target.surface.index
