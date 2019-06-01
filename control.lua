@@ -97,11 +97,21 @@ function get_button_name(player)
 end
 
 function get_target_for(player)
-  return game.players[global.target[player.index]]
+  local previous_target_index = global.target[player.index]
+  if previous_target_index then
+    return game.players[previous_target_index]
+  else
+    return nil
+  end
 end
 
 function set_target_for(player, target)
+  local previous_target = get_target_for(player)
+  if previous_target and previous_target.connected then
+    get_base_element(player)[get_button_name(previous_target)].enabled = true
+  end
   global.target[player.index] = target.index
+  get_base_element(player)[get_button_name(target)].enabled = false
 end
 
 -- Create the camera frame
@@ -130,15 +140,15 @@ function create_camera_frame(player)
     style = "camerasan_camera"
   }
 
-  -- Set a default camera target
-  set_target_for(player, player) 
-
   -- Add buttons for all connected players
   for _,other_player in pairs(game.players) do
     if other_player.connected then
       add_target_button(player, other_player)
     end
   end
+
+  -- Set a default camera target
+  set_target_for(player, player)
 
   return camera_element
 end
