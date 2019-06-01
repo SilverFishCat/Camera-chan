@@ -49,6 +49,10 @@ script.on_event(defines.events.on_player_left_game, function(event)
   for _,other_player in pairs(game.players) do
     if other_player.connected and other_player ~= player then
       remove_target_button(other_player, player)
+
+      if get_target_for(other_player) == player then
+        set_target_for(other_player, other_player)
+      end
     end
   end
 end)
