@@ -16,11 +16,11 @@ end)
 script.on_event(defines.events.on_player_created, function(event)
   local player = game.players[event.player_index]
 
-  mod_gui.get_button_flow(player).add({
+  mod_gui.get_button_flow(player).add {
     type = "button",
     name = CAMERA_TOGGLE_BUTTON,
     caption = "Camera"
-  })
+  }
 end)
 
 -- Update all guis when a player joins
@@ -109,18 +109,26 @@ function create_camera_frame(player)
   local root_element = player.gui.left
 
   -- Frame holding all mod ui elements
-  local frame = mod_gui.get_frame_flow(player).add {type = "frame", name="camera_frame", direction = "vertical"}
-  local base_element = frame.add { type = "flow", name = "element_flow", direction = "vertical" }
-  local PADDING = 8
-  base_element.style.top_padding = PADDING
-  base_element.style.left_padding = PADDING
-  base_element.style.right_padding = PADDING
-  base_element.style.bottom_padding = PADDING
-  base_element.style.maximal_width = 280 + PADDING*2
+  local frame = mod_gui.get_frame_flow(player).add {
+    type = "frame",
+    name = "camera_frame",
+    direction = "vertical"
+  }
+  local base_element = frame.add {
+    type = "flow",
+    name = "element_flow",
+    direction = "vertical",
+    style = "camerasan_container"
+  }
 
-  local camera_element = base_element.add {type = "camera", name="camera", position = player.position, surface_index = player.surface.index, zoom = 0.25}
-  camera_element.style.width = 280
-  camera_element.style.height = 280
+  local camera_element = base_element.add {
+    type = "camera",
+    name="camera",
+    position = player.position,
+    surface_index = player.surface.index,
+    zoom = 0.25,
+    style = "camerasan_camera"
+  }
 
   -- Set a default camera target
   set_target_for(player, player) 
@@ -151,8 +159,12 @@ end
 -- Add button
 function add_target_button(player, target)
   local base_element = get_base_element(player)
-  local button = base_element.add{type = "button", name = get_button_name(target), caption = target.name}
-  button.style.maximal_width = 280
+  local button = base_element.add {
+    type = "button",
+    name = get_button_name(target),
+    caption = target.name,
+    style = "camerasan_target_button"
+  }
 end
 
 -- Remove button
