@@ -7,6 +7,7 @@ VERSION=1.1.4
 MOD_BASE_NAME=Camera-san
 MOD_VERSIONED_NAME=${MOD_BASE_NAME}_${VERSION}
 OUTPUT=${MOD_VERSIONED_NAME}.zip
+TOZIP=info.json changelog.txt control.lua data.lua style.lua LICENSE
 
 .PHONY: all
 all: setup
@@ -15,7 +16,10 @@ all: setup
 setup: ${OUTPUT}
 
 ${OUTPUT}:
-	${ZIP} -r ${OUTPUT} info.json changelog.txt control.lua 
+	mkdir ${MOD_VERSIONED_NAME}
+	cp ${TOZIP} ${MOD_VERSIONED_NAME}
+	${ZIP} -r ${OUTPUT} ${MOD_VERSIONED_NAME}
+	rm -rf ${MOD_VERSIONED_NAME}
 
 .PHONY: clean
 clean:
