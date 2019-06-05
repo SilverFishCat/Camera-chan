@@ -3,8 +3,8 @@
 
 ZIP=zip
 RM=rm
-VERSION=1.1.4
-MOD_BASE_NAME=Camera-san
+VERSION=1.0.1
+MOD_BASE_NAME=Camera-chan
 MOD_VERSIONED_NAME=${MOD_BASE_NAME}_${VERSION}
 OUTPUT=${MOD_VERSIONED_NAME}.zip
 TOZIP=info.json changelog.txt control.lua data.lua style.lua LICENSE
