@@ -169,7 +169,10 @@ end
 
 -- Remove the camera from for a given player
 function destroy_camera_frame(player)
-  get_frame(player).destroy()
+  local frame = get_frame(player)
+  if frame then
+    get_frame(player).destroy()
+  end
 end
 
 function get_frame(player)
