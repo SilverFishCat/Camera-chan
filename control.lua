@@ -26,11 +26,7 @@ end)
 script.on_event(defines.events.on_player_created, function(event)
   local player = game.players[event.player_index]
 
-  mod_gui.get_button_flow(player).add {
-    type = "button",
-    name = CAMERA_TOGGLE_BUTTON,
-    caption = "Camera"
-  }
+  create_show_toggle_button(player)
 end)
 
 -- Update all guis when a player joins
@@ -106,10 +102,6 @@ function set_show_state(player, state)
   end
 end
 
-function get_button_name(player)
-  return TARGET_BUTTONS_PREFIX .. player.name
-end
-
 function get_target_for(player)
   local previous_target_index = global.target[player.index]
   if previous_target_index then
@@ -122,10 +114,23 @@ end
 function set_target_for(player, target)
   local previous_target = get_target_for(player)
   if previous_target and previous_target.connected then
-    get_base_element(player)[get_button_name(previous_target)].enabled = true
+    get_base_element(player)[get_target_button_name(previous_target)].enabled = true
   end
   global.target[player.index] = target.index
-  get_base_element(player)[get_button_name(target)].enabled = false
+  get_base_element(player)[get_target_button_name(target)].enabled = false
+end
+
+function get_target_button_name(player)
+  return TARGET_BUTTONS_PREFIX .. player.name
+end
+
+-- Create the show toggle button
+function create_show_toggle_button(player)
+  return mod_gui.get_button_flow(player).add {
+    type = "button",
+    name = CAMERA_TOGGLE_BUTTON,
+    caption = "Camera"
+  }
 end
 
 -- Create the camera frame
@@ -167,7 +172,7 @@ function create_camera_frame(player)
   return camera_element
 end
 
--- Remove the camera from for a given player
+-- Remove the camera frame for a given player
 function destroy_camera_frame(player)
   local frame = get_frame(player)
   if frame then
@@ -183,21 +188,20 @@ function get_base_element(player)
   return get_frame(player).element_flow
 end
 
--- Add button
+-- Add target button
 function add_target_button(player, target)
-  local base_element = get_base_element(player)
-  local button = base_element.add {
+  return get_base_element(player).add {
     type = "button",
-    name = get_button_name(target),
+    name = get_target_button_name(target),
     caption = target.name,
     style = "camerasan_target_button"
   }
 end
 
--- Remove button
+-- Remove target button
 function remove_target_button(player, target)
   local base_element = get_base_element(player)
-  base_element[get_button_name(target)].destroy()
+  base_element[get_target_button_name(target)].destroy()
 end
 
 -- Update the camera position
