@@ -33,6 +33,9 @@ end)
 script.on_event(defines.events.on_player_joined_game, function(event)
   local player = game.players[event.player_index]
 
+  -- Remove the camera frame so it gets refreshed
+  set_show_state(player, false)
+
   -- Show camera by default
   set_show_state(player, true)
 
@@ -47,9 +50,6 @@ end)
 -- Update all guis when a player leaves
 script.on_event(defines.events.on_player_left_game, function(event)
   local player = game.players[event.player_index]
-
-  -- Remove the camera frame so it gets refreshed if the player comes back online
-  set_show_state(player, false)
 
   -- Remove the target button from all players
   for _,other_player in pairs(game.players) do
