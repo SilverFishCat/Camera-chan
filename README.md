@@ -1,14 +1,9 @@
-# Camera-san
+# Camera-chan
 
-This mod aims to improve communication in multiplay game.
-
-# Objectives
-
-- [x] Show a minimap that targets anywhere the player can see.
-- [x] A player can change the minimap target.
-- [ ] Make the minimap fullscreen-able
-- [ ] Show icons next to other player names and represent what they're currently doing. (building, battling, refactoring, etc
+This mod adds a camera panel that shows you what other players are doing.
+You can select which player to view, as well as toggle the panel on and off.
+This is my own personal branch of the original mod, Camera-san.
 
 # Contribution
 
-Welcome!
+All contribution are welcome, though please consider checking out the upsteam Camera-san repo as well.
